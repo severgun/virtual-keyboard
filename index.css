@@ -1,115 +1,132 @@
 html {
+  font-family: 'Exo 2', sans-serif;
   font-size: 10px;
   --key-size: 7rem;
+  
+  --main-color: #E8E9EB;
+  --secondary-color: #313638;
+  --light-color: #E0DFD5;
+  --accent-color: #F06543;
 }
 
 .wrapper {
-    width: 128.0rem;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 128.0rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .textarea {
-    width: calc(var(--key-size) * 16);
-    height: auto;
-    margin-bottom: 1.5rem;
-    font-family: 'Exo 2', sans-serif;
+  width: calc(var(--key-size) * 16);
+  height: auto;
+  margin-bottom: 1.5rem;
+
+  font-size: 1.8rem;
 }
 
 .keyboard {
-    display: grid;
-    grid-template-columns: repeat(64, calc(var(--key-size) / 4));
-    grid-template-rows: repeat(5, var(--key-size));
+  display: grid;
+  grid-template-columns: repeat(64, calc(var(--key-size) / 4));
+  grid-template-rows: repeat(5, var(--key-size));
 
-    width: max-content;
-    padding: 1rem;
-    
-    border: 0.2rem solid darkslategrey;
-    border-radius: 1rem;
+  width: max-content;
+  padding: 1rem;
+  
+  border: 0.2rem solid var(--secondary-color);
+  border-radius: 1rem;
 
-    background-color: lightcyan;
+  background-color: var(--light-color);
 }
 
 .keyboard__key {
-    grid-column-end: span 4;
-    display: flex;
-    margin: 0.25rem;
-    padding-top: 1rem;
-    justify-content: center;
+  grid-column-end: span 4;
+  display: flex;
+  margin: 0.25rem;
+  padding-top: 1rem;
+  justify-content: center;
 
-    font-family: 'Exo 2', sans-serif;
-    /* font-family: 'JetBrains Mono', monospace; */
-    font-size: 1.8rem;
-    text-align: center;
+  font-size: 1.8rem;
+  text-align: center;
 
-    background-color: aquamarine;
-    
-    border: 0.2rem solid darkslategrey;
-    border-radius: 0.5rem;
-    
-    box-shadow: 0.3rem 0.3rem 0.5rem dimgray;
+  background-color: var(--main-color);
+  color: var(--secondary-color);
+  
+  border: 0.2rem solid var(--secondary-color);
+  border-radius: 0.5rem;
+  
+  box-shadow: 0.3rem 0.3rem 0.5rem dimgray;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition: transform 0.5s;
+  transition: transform 0.5s;
 }
 
 .keyboard__key::after {
-    position: relative;
-    content: attr(data-after);
-    left: 0.7rem;
+  position: relative;
+  content: attr(data-after);
+  left: 0.7rem;
 }
 
 .keyboard__key_pressed {
-    box-shadow:none;
-    background-color: darkcyan;
-    transform: translate(0.2rem, 0.2rem);
-    transform: scale(0.98);
+  box-shadow:none;
+  background-color: var(--accent-color);
+  transform: translate(0.2rem, 0.2rem);
+  transform: scale(0.98);
 }
 
 .keyboard__placeholder {
-    grid-column-end: span 4;
-    margin: 0.25rem;
-}
-
-.keyboard__modifier-key {
-    background-color: darkcyan;
+  grid-column-end: span 4;
+  margin: 0.25rem;
 }
 
 .keyboard__shift-left {
-    grid-column-end: span 9;
+  grid-column-end: span 9;
 }
 
 .keyboard__shift-right {
-    grid-column-end: span 7;
+  grid-column-end: span 7;
 }
 
 .keyboard__tab {
-    grid-column-end: span 6;
+  grid-column-end: span 6;
 }
 
 .keyboard__backspace {
-    grid-column-end: span 8;
+  grid-column-end: span 8;
 }
 
 .keyboard__space {
-    grid-column-end: span 25;
+  grid-column-end: span 25;
 }
 
 .keyboard__enter {
-    grid-column-end: span 9;
+  grid-column-end: span 9;
 }
 
 .keyboard__capslock {
-    grid-column-end: span 7;
+  grid-column-end: span 7;
 }
 
 .keyboard__backslash {
-    grid-column-end: span 6;
+  grid-column-end: span 6;
 }
 
 .keyboard__ctrl-alt-shift-left {
-    grid-column-end: span 5;
+  grid-column-end: span 5;
+}
+
+.note {
+  margin-top: 5rem;
+  line-height: 3rem;
+  font-size: 2rem;
+}
+
+.note__key {
+  display: inline-block;
+  padding: 0 0.6rem;
+  background-color: var(--secondary-color);
+  color: var(--main-color);
+  border: 0.1rem solid var(--secondary-color);
+  border-radius: 0.5rem;
 }
