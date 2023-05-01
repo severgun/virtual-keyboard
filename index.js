@@ -12,8 +12,14 @@ textarea.id = 'textarea';
 textarea.cols = 150;
 textarea.rows = 10;
 textarea.autofocus = true;
+
 const keyboard = new Keyboard();
-wrapper.append(textarea, keyboard.component);
+
+const note = document.createElement('div');
+note.classList.add('note');
+note.innerHTML = 'Keyboard was created in Windows.<br><span class = "note__key">Left Shift</span> + <span class = "note__key">Left Alt</span> to switch layout.';
+
+wrapper.append(textarea, keyboard.component, note);
 
 document.addEventListener('keydown', keyboard.handleKeyDown.bind(keyboard));
 document.addEventListener('keyup', keyboard.handleKeyUp.bind(keyboard));
