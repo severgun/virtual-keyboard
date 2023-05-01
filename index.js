@@ -17,6 +17,7 @@ wrapper.append(textarea, keyboard.component);
 
 document.addEventListener('keydown', keyboard.handleKeyDown.bind(keyboard));
 document.addEventListener('keyup', keyboard.handleKeyUp.bind(keyboard));
+window.addEventListener('blur', keyboard.handleKeyUp.bind(keyboard));
 
 keyboard.keys.forEach((element) => {
   element.keyComponent.addEventListener('mousedown', keyboard.handleMouseDown.bind(keyboard));

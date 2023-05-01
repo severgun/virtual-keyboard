@@ -300,7 +300,12 @@ export default class Keyboard {
   }
 
   handleKeyUp(event) {
-    event.preventDefault();
+    // handle Alt+Tab. Prevent Alt from sticking visually pressed.
+    if (event.type === 'blur') {
+      this.processKeyUp('AltLeft');
+      this.processKeyUp('AltRight');
+      return;
+    }
 
     let { code } = event;
     if (!Object.hasOwn(KEYS_ID, code)) { return; }
