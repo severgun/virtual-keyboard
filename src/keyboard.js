@@ -75,6 +75,9 @@ const KEYS_ID = {
 export default class Keyboard {
   constructor() {
     this.keys = [];
+    this.shiftLeft = false;
+    this.altLeft = false;
+    this.capslock = false;
 
     this.keyboard = document.createElement('div');
     this.keyboard.classList.add('keyboard');
@@ -85,7 +88,8 @@ export default class Keyboard {
       this.keys.push(key);
     });
 
-    this.currentLayout = 'enUS';
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+
 
     this.switchLayout(this.currentLayout, false, false);
   }
@@ -102,9 +106,11 @@ export default class Keyboard {
         const key = keyObj.keyComponent;
         key.innerText = '';
         key.setAttribute('data-after', '');
-        if (shift) {
+        if (shift && !capslock) {
           key.innerText = modified || regular.toUpperCase();
-        } else {
+        } else if (shift && capslock) {
+          key.innerText = modified || regular.toLowerCase();
+        } else if (!shift && capslock) {
           key.innerText = regular;
           if (modified) {
             key.setAttribute('data-after', modified);
@@ -112,13 +118,19 @@ export default class Keyboard {
         }
         if (capslock) {
           key.innerText = key.innerText.toUpperCase();
+        } else {
+          key.innerText = regular;
+          if (modified) {
+            key.setAttribute('data-after', modified);
         }
+        }
+
         keyObj.keyText = key.innerText;
       });
     }
   }
 
-  processKeyDown(code, key) {
+  processKeyDown(code) {
     const textarea = document.querySelector('.textarea');
     const cursorPos = textarea.selectionStart;
 
@@ -181,6 +193,7 @@ export default class Keyboard {
         break;
       case 'ControlLeft':
       case 'ControlRight':
+        break;
       case 'MetaLeft':
       case 'MetaRight':
         break;
@@ -190,7 +203,7 @@ export default class Keyboard {
         break;
 
       default:
-        insertChar(key);
+        insertChar(keyComponent.innerText);
         break;
     }
   }
@@ -212,15 +225,44 @@ export default class Keyboard {
   handleMouseDown(event) {
     event.preventDefault();
     const keyObj = this.keys.find((element) => element.id === event.target.id);
-    keyObj.keyComponent.addEventListener('mouseout', this.handleMouseUp.bind(this));
-    this.processKeyDown(keyObj.code, keyObj.keyText);
+    keyObj.keyComponent.addEventListener('mouseout', this.handleMouseUp);
+    if (keyObj.code === 'ShiftLeft') {
+      this.shiftLeft = !this.shiftLeft;
+    }
+    if (keyObj.code === 'AltLeft') {
+      this.altLeft = !this.altLeft;
+    }
+    this.processKeyDown(keyObj.code);
     document.getElementById('textarea').focus();
   }
 
   handleMouseUp(event) {
     event.preventDefault();
     const keyObj = this.keys.find((element) => element.id === event.target.id);
+    keyObj.keyComponent.removeEventListener('mouseout', this.handleMouseUp);
+
+    if (keyObj.code === 'ShiftLeft' && this.shiftLeft && !this.altLeft) {
+      // hold key
+    } else if (keyObj.code === 'AltLeft' && this.altLeft && !this.shiftLeft) {
+      // hold alt
+    } else if ((keyObj.code === 'AltLeft' && this.shiftLeft && this.altLeft) || (keyObj.code === 'ShiftLeft' && this.shiftLeft && this.altLeft)) {
+      const availLayouts = Object.keys(layouts);
+      const layoutIndex = availLayouts.indexOf(this.currentLayout) + 1 > availLayouts.length - 1 ? 0
+        : availLayouts.indexOf(this.currentLayout) + 1;
+      this.currentLayout = availLayouts[layoutIndex];
+
+      this.processKeyUp(keyObj.code);
+      this.shiftLeft = false;
+      this.altLeft = false;
+      this.processKeyUp('ShiftLeft');
+      this.processKeyUp('AltLeft');
+    } else {
     this.processKeyUp(keyObj.code);
+      this.shiftLeft = false;
+      this.altLeft = false;
+      this.processKeyUp('ShiftLeft');
+      this.processKeyUp('AltLeft');
+    }
     document.getElementById('textarea').focus();
   }
 
@@ -231,6 +273,7 @@ export default class Keyboard {
     const { key } = event;
 
     if (!Object.hasOwn(KEYS_ID, code)) { return; }
+    event.preventDefault();
 
     // Firefox fix
     if (code === 'OSLeft') {
@@ -240,8 +283,20 @@ export default class Keyboard {
       code = 'MetaRight';
     }
 
-    console.log(code, key);
-    this.processKeyDown(code, key);
+    if (code === 'ShiftLeft' && !event.repeat) {
+      this.shiftLeft = true;
+    }
+    if (code === 'AltLeft' && !event.repeat) {
+      this.altLeft = true;
+    }
+
+    if (this.shiftLeft && this.altLeft && !event.repeat) {
+      const availLayouts = Object.keys(layouts);
+      const layoutIndex = availLayouts.indexOf(this.currentLayout) + 1 > availLayouts.length - 1 ? 0
+        : availLayouts.indexOf(this.currentLayout) + 1;
+      this.currentLayout = availLayouts[layoutIndex];
+    }
+    this.processKeyDown(code);
   }
 
   handleKeyUp(event) {
@@ -249,12 +304,21 @@ export default class Keyboard {
 
     let { code } = event;
     if (!Object.hasOwn(KEYS_ID, code)) { return; }
+    event.preventDefault();
+
     // Firefox fix
     if (code === 'OSLeft') {
       code = 'MetaLeft';
     }
     if (code === 'OSRight') {
       code = 'MetaRight';
+    }
+
+    if (code === 'ShiftLeft') {
+      this.shiftLeft = false;
+    }
+    if (code === 'AltLeft') {
+      this.altLeft = false;
     }
 
     this.processKeyUp(code);
