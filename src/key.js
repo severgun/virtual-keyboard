@@ -8,8 +8,8 @@ export default class Key {
       case 'ControlRight':
         this.keyText = 'Ctrl';
         break;
-      case 'OSLeft':
-      case 'OSRight':
+      case 'MetaLeft':
+      case 'MetaRight':
         this.keyText = 'Win';
         break;
       case 'AltLeft':
@@ -94,7 +94,7 @@ export default class Key {
           this.keyComponent.classList.add('keyboard__space');
           break;
         case 'ControlLeft':
-        case 'OSLeft':
+        case 'MetaLeft':
         case 'AltLeft':
           this.keyComponent.classList.add('keyboard__ctrl-alt-shift-left');
           break;
