@@ -1,0 +1,30 @@
+{
+  "name": "virtual-keyboard",
+  "version": "1.0.0",
+  "description": "virtual-keyboard task for RS School",
+  "main": "index.js",
+  "scripts": {
+    "lint" : "./node_modules/.bin/eslint",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/severgun/virtual-keyboard.git"
+  },
+  "keywords": [
+    "virtual",
+    "keyboard",
+    "rsschool"
+  ],
+  "author": "Sergei Vergun",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/severgun/virtual-keyboard/issues"
+  },
+  "homepage": "https://github.com/severgun/virtual-keyboard#readme",
+  "devDependencies": {
+    "eslint": "^8.39.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5"
+  }
+}
