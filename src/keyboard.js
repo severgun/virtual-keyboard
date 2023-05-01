@@ -90,6 +90,7 @@ export default class Keyboard {
 
     this.handleMouseUp = this.handleMouseUp.bind(this);
 
+    this.currentLayout = localStorage.getItem('vc_layout') || 'enUS';
 
     this.switchLayout(this.currentLayout, false, false);
   }
@@ -115,18 +116,17 @@ export default class Keyboard {
           if (modified) {
             key.setAttribute('data-after', modified);
           }
-        }
-        if (capslock) {
           key.innerText = key.innerText.toUpperCase();
         } else {
           key.innerText = regular;
           if (modified) {
             key.setAttribute('data-after', modified);
-        }
+          }
         }
 
         keyObj.keyText = key.innerText;
       });
+      localStorage.setItem('vc_layout', layoutName);
     }
   }
 
@@ -197,7 +197,6 @@ export default class Keyboard {
       case 'MetaLeft':
       case 'MetaRight':
         break;
-
       case 'CapsLock':
         this.switchLayout(this.currentLayout, false, !this.capslock);
         break;
@@ -257,7 +256,7 @@ export default class Keyboard {
       this.processKeyUp('ShiftLeft');
       this.processKeyUp('AltLeft');
     } else {
-    this.processKeyUp(keyObj.code);
+      this.processKeyUp(keyObj.code);
       this.shiftLeft = false;
       this.altLeft = false;
       this.processKeyUp('ShiftLeft');
@@ -267,10 +266,7 @@ export default class Keyboard {
   }
 
   handleKeyDown(event) {
-    event.preventDefault();
-
     let { code } = event;
-    const { key } = event;
 
     if (!Object.hasOwn(KEYS_ID, code)) { return; }
     event.preventDefault();
