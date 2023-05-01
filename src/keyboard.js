@@ -81,11 +81,13 @@ export default class Keyboard {
 
     Object.entries(KEYS_ID).forEach((element) => {
       const key = new Key(element[0], element[1]);
-      this.keyboard.append(key.createComponent());
+      this.keyboard.append(key.keyComponent);
       this.keys.push(key);
     });
 
-    this.switchLayout('enUS', false, false);
+    this.currentLayout = 'enUS';
+
+    this.switchLayout(this.currentLayout, false, false);
   }
 
   get component() {
@@ -94,8 +96,12 @@ export default class Keyboard {
 
   switchLayout(layoutName, shift, capslock) {
     if (Object.hasOwn(layouts, layoutName)) {
+      this.capslock = capslock;
       layouts[layoutName].forEach(([regular, modified], code) => {
-        const key = this.keyboard.querySelector(`#${KEYS_ID[code]}`);
+        const keyObj = this.keys.find((element) => element.code === code);
+        const key = keyObj.keyComponent;
+        key.innerText = '';
+        key.setAttribute('data-after', '');
         if (shift) {
           key.innerText = modified || regular.toUpperCase();
         } else {
@@ -107,7 +113,150 @@ export default class Keyboard {
         if (capslock) {
           key.innerText = key.innerText.toUpperCase();
         }
+        keyObj.keyText = key.innerText;
       });
     }
+  }
+
+  processKeyDown(code, key) {
+    const textarea = document.querySelector('.textarea');
+    const cursorPos = textarea.selectionStart;
+
+    const keyComponent = document.getElementById(KEYS_ID[code]);
+    keyComponent.classList.add('keyboard__key_pressed');
+
+    function insertChar(char) {
+      textarea.value = textarea.value.substring(0, cursorPos)
+        .concat(char, textarea.value.substring(cursorPos));
+      textarea.selectionStart = cursorPos + 1;
+      textarea.selectionEnd = cursorPos + 1;
+    }
+
+    switch (code) {
+      case 'Backspace':
+        textarea.value = textarea.value.substring(0, cursorPos - 1).concat('', textarea.value.substring(cursorPos));
+        textarea.selectionStart = cursorPos - 1;
+        textarea.selectionEnd = cursorPos - 1;
+        break;
+      case 'Space':
+        insertChar(' ');
+        break;
+      case 'Delete':
+        textarea.value = textarea.value.substring(0, cursorPos).concat('', textarea.value.substring(cursorPos + 1));
+        textarea.selectionStart = cursorPos;
+        textarea.selectionEnd = cursorPos;
+        break;
+      case 'ArrowLeft':
+        insertChar('←');
+        break;
+      case 'ArrowRight':
+        insertChar('→');
+        break;
+      case 'ArrowUp':
+        insertChar('↑');
+        break;
+      case 'ArrowDown':
+        insertChar('↓');
+        break;
+      case 'Enter':
+        insertChar('\n');
+        break;
+      case 'Tab':
+        insertChar('\t');
+        break;
+      case 'Home':
+        textarea.selectionStart = 0;
+        textarea.selectionEnd = 0;
+        break;
+      case 'End':
+        textarea.selectionStart = textarea.textLength;
+        textarea.selectionEnd = textarea.textLength;
+        break;
+      case 'AltLeft':
+      case 'AltRight':
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.switchLayout(this.currentLayout, true, this.capslock);
+        break;
+      case 'ControlLeft':
+      case 'ControlRight':
+      case 'MetaLeft':
+      case 'MetaRight':
+        break;
+
+      case 'CapsLock':
+        this.switchLayout(this.currentLayout, false, !this.capslock);
+        break;
+
+      default:
+        insertChar(key);
+        break;
+    }
+  }
+
+  processKeyUp(code) {
+    const keyComponent = document.getElementById(KEYS_ID[code]);
+    keyComponent.classList.remove('keyboard__key_pressed');
+
+    switch (code) {
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.switchLayout(this.currentLayout, false, this.capslock);
+        break;
+      default:
+        break;
+    }
+  }
+
+  handleMouseDown(event) {
+    event.preventDefault();
+    const keyObj = this.keys.find((element) => element.id === event.target.id);
+    keyObj.keyComponent.addEventListener('mouseout', this.handleMouseUp.bind(this));
+    this.processKeyDown(keyObj.code, keyObj.keyText);
+    document.getElementById('textarea').focus();
+  }
+
+  handleMouseUp(event) {
+    event.preventDefault();
+    const keyObj = this.keys.find((element) => element.id === event.target.id);
+    this.processKeyUp(keyObj.code);
+    document.getElementById('textarea').focus();
+  }
+
+  handleKeyDown(event) {
+    event.preventDefault();
+
+    let { code } = event;
+    const { key } = event;
+
+    if (!Object.hasOwn(KEYS_ID, code)) { return; }
+
+    // Firefox fix
+    if (code === 'OSLeft') {
+      code = 'MetaLeft';
+    }
+    if (code === 'OSRight') {
+      code = 'MetaRight';
+    }
+
+    console.log(code, key);
+    this.processKeyDown(code, key);
+  }
+
+  handleKeyUp(event) {
+    event.preventDefault();
+
+    let { code } = event;
+    if (!Object.hasOwn(KEYS_ID, code)) { return; }
+    // Firefox fix
+    if (code === 'OSLeft') {
+      code = 'MetaLeft';
+    }
+    if (code === 'OSRight') {
+      code = 'MetaRight';
+    }
+
+    this.processKeyUp(code);
   }
 }
